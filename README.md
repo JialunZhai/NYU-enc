@@ -26,7 +26,7 @@ If you compiled successfully, you will see an executable file named **nyuenc** i
 The usage of the encoder is simple. Here the optional option _-j_ followed by an positive integer argument _$jobs_ indecate the amount of threads you want to use.
 
 ```bash
-./nyuenc [-j $jobs] $infile.txt > $outfile.txt
+./nyuenc [-j $jobs] infile.txt > outfile.txt
 ```
 
 To creat a thread pool, an unsigned integer, indicating the size of the pool, must be provided to the constructor of **ThreadPool**.
