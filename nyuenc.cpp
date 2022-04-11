@@ -55,18 +55,18 @@ ThreadPool::ThreadPool(const unsigned &pool_sz):shutdown(false),mutex(PTHREAD_MU
     pthread_attr_init(&attr);
     if(pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED)){
         cerr<<"Error in ThreadPool: set detach failed"<<endl;
-        exit(0);
+        exit(EXIT_FAILURE);
     }
     if(pthread_attr_setscope(&attr,PTHREAD_SCOPE_SYSTEM)){
         cerr<<"Error in ThreadPool: set scope failed"<<endl;
-        exit(0);
+        exit(EXIT_FAILURE);
     }
     //create work threads
     for(unsigned i=0;i!=pool_sz;++i){
         pthread_t tid;
         if(pthread_create(&tid,&attr,&ThreadPool::workThread,(void*)this)){
             cerr<<"Error in ThreadPool: pthread_create failed"<<endl;
-            exit(0);
+            exit(EXIT_FAILURE);
         }
     }
 }
@@ -185,8 +185,8 @@ void parse_cmd(int argc, char* argv[],unsigned &worker_num,char** &ptr_infile) {
 int main(int argc, char* argv[]){
     chunks=(char*)malloc(CHUNKS_SZ);
     if(!chunks){
-        cerr<<"malloc chunks failed"<<endl;
-        exit(0);
+        cerr<<"ERROR: malloc chunks failed"<<endl;
+        exit(EXIT_FAILURE);
     }
 
     unsigned worker_num=1;
@@ -202,8 +202,8 @@ int main(int argc, char* argv[]){
         char* infile=*ptr_infile;
         int fd_in=open(infile,O_RDONLY);
         if(fd_in==-1){
-            cerr<<"open infile failed"<<endl;
-            exit(0);
+            cerr<<"ERROR: open infile failed"<<endl;
+            exit(EXIT_FAILURE);
         }
         fd_in_lst.push_back(fd_in);
         
@@ -213,9 +213,9 @@ int main(int argc, char* argv[]){
 
         char* src_bg=nullptr;
         if(!(src_bg=(char*)mmap(NULL,file_sz,PROT_READ,MAP_PRIVATE,fd_in,0))){
-            cerr<<"mmap input-file failed: ";
+            cerr<<"ERROR: mmap input-file failed: ";
             perror(strerror(errno));
-            exit(0);
+            exit(EXIT_FAILURE);
         }
         mmap_src_lst.push_back({src_bg,file_sz});
 
@@ -233,9 +233,9 @@ int main(int argc, char* argv[]){
                 unique_ptr<Encoder> encoder(new Encoder(src_bg+start,chunk_num++));
                 pool.addTask(std::move(encoder));
             }catch(exception &e){
-                cerr<<"add new task failed: "<<endl;
+                cerr<<"ERROR: add new task failed: "<<endl;
                 cerr<<e.what()<<endl;
-                exit(0);
+                exit(EXIT_FAILURE);
             }
         }
         ++ptr_infile;
