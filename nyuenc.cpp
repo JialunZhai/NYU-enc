@@ -23,6 +23,7 @@ using namespace std;
 
 class Task{
 public: 
+    virtual ~Task()=default;
     virtual void run()=0;
 };
 
@@ -135,7 +136,7 @@ public:
             const unsigned &_chunk_id):src(_src),dst(chunks+(unsigned long)_chunk_id*2*CHUNK_SZ),chunk_id(_chunk_id){
         return;
     }
-    void run(){
+    void run() override {
         collector[chunk_id].first=dst;
         unsigned cnt=1;
         char pre_ch=src[0];
