@@ -23,8 +23,8 @@ using namespace std;
 
 class Task{
 public: 
-    virtual ~Task()=default;
-    virtual void run()=0;
+    virtual ~Task() = default;
+    virtual void run() = 0;
 };
 
 #endif
