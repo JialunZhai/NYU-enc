@@ -59,15 +59,26 @@ ThreadPool::ThreadPool(const unsigned &pool_sz):shutdown(false),mutex(PTHREAD_MU
     //set detach
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    if(pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED))
-        throw runtime_error("set detach failed");
-    if(pthread_attr_setscope(&attr,PTHREAD_SCOPE_SYSTEM)) 
-        throw runtime_error("set scope failed");
-    //create work threads
-    for(unsigned i=0;i!=pool_sz;++i){
-        pthread_t tid;
-        if(pthread_create(&tid,&attr,&ThreadPool::workThread,(void*)this))
-            throw runtime_error("create pthread failed");
+    try{
+        if(pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED))
+            throw runtime_error("set detach failed");
+        if(pthread_attr_setscope(&attr,PTHREAD_SCOPE_SYSTEM)) 
+            throw runtime_error("set scope failed");
+        //create work threads
+        for(unsigned i=0;i!=pool_sz;++i){
+            pthread_t tid;
+            if(pthread_create(&tid,&attr,&ThreadPool::workThread,(void*)this))
+                throw runtime_error("create pthread failed");
+        }
+    }catch(...){
+        shutdown=true;
+        //----------------- critical region begin ----------------------------
+        pthread_mutex_lock(&mutex);
+        while(!task_queue.empty()) task_queue.pop();
+        pthread_cond_signal(&cond);
+        pthread_mutex_unlock(&mutex);
+        //----------------- critical region end ------------------------------
+        throw;
     }
 }
 
