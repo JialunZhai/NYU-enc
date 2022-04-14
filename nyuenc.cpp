@@ -148,14 +148,13 @@ public:
         while(++i<collector[chunk_id].second){
             if(src[i]==pre_ch) ++cnt;
             else{
-                if(pre_ch==EOF||cnt==EOF) throw runtime_error("EOF comes before the end of file");
                 dst[j++]=pre_ch;
                 dst[j++]=static_cast<unsigned char>(cnt);
                 pre_ch=src[i];
                 cnt=1;
             }
         }
-        if(pre_ch!=EOF&&cnt!=0){
+        if(cnt!=0){
             dst[j++]=pre_ch;
             dst[j++]=static_cast<unsigned char>(cnt);
         }
