@@ -56,10 +56,11 @@ private:
 };
 
 ThreadPool::ThreadPool(const unsigned &pool_sz):shutdown(false),mutex(PTHREAD_MUTEX_INITIALIZER),cond(PTHREAD_COND_INITIALIZER){
-    //set detach
     pthread_attr_t attr;
-    pthread_attr_init(&attr);
     try{
+        if(pthread_attr_init(&attr))
+            throw runtime_error("pthread init failed");
+        //set detach
         if(pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED))
             throw runtime_error("set detach failed");
         if(pthread_attr_setscope(&attr,PTHREAD_SCOPE_SYSTEM)) 
