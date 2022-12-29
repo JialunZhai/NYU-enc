@@ -14,7 +14,7 @@ This encoder is built on **Linux** with **C++11** language.
 
 ## Compilation
 
-If you have installed CMake on your Linux System, you can directly run command `make` to compile; Otherwise, you should run command
+If you have installed Make on your Linux System, you can directly run command `make` to compile; Otherwise, you should run command
 
 `g++ -pthread nyuenc.cpp -std=c++11 -o nyuenc`
 
